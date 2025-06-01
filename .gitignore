@@ -17,3 +17,6 @@ uploads/
 # OS-specific files
 .DS_Store
 Thumbs.db
+
+# Ignore all the pfd files
+*.pdf
