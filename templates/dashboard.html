@@ -1,0 +1,90 @@
+{% extends "layout.html" %}
+
+{% block title %}Dashboard - AI Resume Parser{% endblock %}
+
+{% block body_class %}page-dashboard{% endblock %}
+
+{% block head_extra %}
+    {# Specific meta tags for dashboard page if any #}
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-page-content-wrapper"> {# This is now .page-dashboard .dashboard-page-content-wrapper #}
+    <div class="bg-decoration">
+        <div class="floating-shape mochi-1"></div>
+        <div class="floating-shape mochi-2"></div>
+        <div class="floating-shape tea-bowl"></div>
+    </div>
+
+    <header class="dashboard-header">
+        <h1>📊 Your Dashboard</h1>
+        <p>Track your resume analysis history and saved job searches</p>
+    </header>
+
+    <nav class="dashboard-nav-bar">
+        <div class="dashboard-nav-container">
+            <a href="{{ url_for('index') }}" class="dashboard-nav-btn">🤖 New Analysis</a>
+            <a href="#saved-resumes-section" class="dashboard-nav-btn active">📄 Saved Resumes</a>
+            <a href="#job-searches-history-placeholder" class="dashboard-nav-btn">💼 Job Searches</a>
+        </div>
+    </nav>
+
+    <div class="dashboard-content-area"> {# Was .container #}
+        <section class="dashboard-section">
+            <h2 class="section-title"><div class="section-icon">📈</div> Session Overview</h2>
+            <div class="stats-grid">
+                <div class="stat-card"><div class="stat-number">{{ user_searches | length }}</div><div class="stat-label">Resumes Analyzed</div></div>
+                <div class="stat-card"><div class="stat-number">N/A</div><div class="stat-label">Total Jobs Found</div></div>
+                <div class="stat-card"><div class="stat-number">N/A</div><div class="stat-label">Avg. Resume Score</div></div>
+                <div class="stat-card"><div class="stat-number">{{ g.user.created_at.strftime('%b %Y') if g.user and g.user.created_at else 'N/A' }}</div><div class="stat-label">User Since</div></div>
+            </div>
+        </section>
+        <div class="quick-actions">
+            <a href="{{ url_for('index') }}" class="quick-action-btn">🆕 Analyze New Resume</a>
+            <button class="quick-action-btn" onclick="exportClientData()">📥 Export Displayed Data</button>
+            <button class="quick-action-btn" onclick="sharePage()">🔗 Share Dashboard</button>
+        </div>
+        <section class="dashboard-section" id="saved-resumes-section">
+            <h2 class="section-title"><div class="section-icon">📄</div> Recently Analyzed Resumes</h2>
+            <div id="resumesList">
+                {% if user_searches %}
+                    {% for search in user_searches %}
+                    <div class="session-item">
+                        <div class="item-header">
+                            <div class="item-title">📄 Search ID: {{ search.session_id }}</div>
+                            <div class="item-timestamp">{{ search.created_at.strftime('%Y-%m-%d %H:%M UTC') if search.created_at else 'N/A' }}</div>
+                        </div>
+                        <div class="item-details">
+                             <p><strong>Score:</strong> {% if search.resume_data and (search.resume_data.score is not none or search.resume_data.resume_score is not none) %}{{ "%.0f" % ((search.resume_data.score | default(search.resume_data.resume_score, 0)) * 100) }}%{% else %}N/A{% endif %}</p>
+                            {% if search.resume_data and search.resume_data.extracted_skills %}<p><strong>Top Skills:</strong> {{ search.resume_data.extracted_skills[:5]|join(', ') }}{% if search.resume_data.extracted_skills|length > 5 %}...{% endif %}</p><div style="margin-top: 0.5rem;">{% for skill in search.resume_data.extracted_skills[:5] %}<span class="tag skill">{{ skill }}</span>{% endfor %}</div>{% endif %}
+                            <p><strong>Personalized Jobs Found:</strong> {{ search.personalized_jobs|length if search.personalized_jobs else 0 }}</p>
+                        </div>
+                        <div class="item-actions">
+                            <a href="{{ url_for('show_results_page', search_id=search.session_id) }}" class="action-btn info">📊 View Analysis</a>
+                            {% if search.user_id and g.user and search.user_id == g.user._id %}<a href="{{ url_for('clear_session_data_route', search_id=search.session_id) }}" class="action-btn danger" onclick="return confirm('Are you sure?');">🗑️ Delete</a>{% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state"><div class="empty-icon">📭</div><p>No resumes analyzed yet.</p><a href="{{ url_for('index') }}" class="quick-action-btn" style="margin-top: 1rem;">Upload First Resume</a></div>
+                {% endif %}
+            </div>
+        </section>
+        <section class="dashboard-section" id="job-searches-history-placeholder">
+            <h2 class="section-title"><div class="section-icon">💼</div> Job Search History (Placeholder)</h2>
+            <div class="empty-state"><div class="empty-icon">🔍</div><p>Detailed job search history coming soon.</p></div>
+        </section>
+        <section class="dashboard-section" id="insights-placeholder">
+            <h2 class="section-title"><div class="section-icon">💡</div> Insights & Recommendations (Placeholder)</h2>
+            <div class="empty-state"><div class="empty-icon">💡</div><p>Personalized insights will appear here.</p></div>
+        </section>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts_extra %}
+<script>
+    // Your existing client-side JS for dashboard.html (exportClientData, sharePage, smooth scroll)
+    // ... (script content from previous dashboard.html) ...
+</script>
+{% endblock %} 

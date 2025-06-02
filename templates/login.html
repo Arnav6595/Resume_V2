@@ -1,0 +1,62 @@
+{% extends "layout.html" %}
+
+{% block title %}Login - AI Resume Parser{% endblock %}
+
+{% block body_class %}page-login{% endblock %}
+
+{% block head_extra %}
+    {# Specific meta tags for login page if any #}
+{% endblock %}
+
+{% block content %}
+<div class="login-page-wrapper"> {# This class is now .page-login .login-page-wrapper in CSS #}
+    <div class="bg-decoration">
+        <div class="floating-shape mochi-1"></div>
+        <div class="floating-shape mochi-2"></div>
+        <div class="floating-shape dorayaki"></div>
+    </div>
+
+    <main class="main-content-login">
+        <div class="login-container">
+            <div class="login-header">
+                <div class="login-icon">👤</div>
+                <h1 class="login-title">Welcome Back</h1>
+                <p class="login-subtitle">Sign in to access your resume analysis dashboard</p>
+            </div>
+
+            <form class="login-form" id="loginForm" method="POST" action="{{ url_for('login') }}">
+                {# Flask-WTF CSRF token, if you use Flask-WTF #}
+                {# {{ form.csrf_token }} #}
+                <div class="form-group">
+                    <label class="form-label" for="username">Username</label>
+                    <input type="text" id="username" name="username" class="form-input" required placeholder="Enter your username" value="{{ request.form.username if request and request.form else '' }}">
+                    <div class="error-message-field" id="usernameError"></div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="password">Password</label>
+                    <input type="password" id="password" name="password" class="form-input" required placeholder="Enter your password">
+                    <div class="error-message-field" id="passwordError"></div>
+                </div>
+                <div class="form-options">
+                    <label class="remember-me"><input type="checkbox" id="rememberMe" name="rememberMe"> Remember me</label>
+                    <a href="#" class="forgot-password">Forgot password?</a>
+                </div>
+                <button type="submit" class="login-btn" id="loginBtn"><span class="btn-text">Sign In</span></button>
+                <div class="error-message-field" id="generalError"></div>
+            </form>
+            <div class="login-footer">
+                <p class="signup-link">Don't have an account? <a href="{{ url_for('register') }}">Sign up here</a></p>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}
+
+{% block scripts_extra %}
+<script>
+    // Your existing client-side validation JS for login.html
+    // ... (script content from previous login.html, mainly for validation feedback) ...
+    const loginForm = document.getElementById('loginForm');
+    // ... rest of your validation script ...
+</script>
+{% endblock %} 

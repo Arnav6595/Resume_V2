@@ -1,0 +1,82 @@
+{% extends "layout.html" %}
+
+{% block title %}Register - AI Resume Parser{% endblock %}
+
+{% block body_class %}page-register{% endblock %}
+
+{% block head_extra %}
+    {# Specific meta tags for registration page if any #}
+{% endblock %}
+
+{% block content %}
+<div class="register-page-wrapper"> {# This class is now .page-register .register-page-wrapper #}
+    <div class="bg-decoration">
+        <div class="floating-shape mochi-1"></div>
+        <div class="floating-shape mochi-2"></div>
+        <div class="floating-shape mochi-3"></div>
+        <div class="floating-shape dorayaki"></div>
+    </div>
+
+    <main class="main-content-register">
+        <div class="register-container">
+            <div class="register-header">
+                <div class="register-icon">🚀</div>
+                <h1 class="register-title">Join Us Today</h1>
+                <p class="register-subtitle">Create your account and start optimizing your resume</p>
+            </div>
+            <form class="register-form" id="registerForm" method="POST" action="{{ url_for('register') }}">
+                {# {{ form.csrf_token }} #}
+                <div class="form-group full-width">
+                    <label class="form-label" for="username">Username</label>
+                    <input type="text" id="username" name="username" class="form-input" required placeholder="Choose a username" value="{{ request.form.username if request.form else '' }}">
+                    <div class="error-message-field" id="usernameError"></div>
+                </div>
+                <div class="form-group full-width">
+                    <label class="form-label" for="email">Email Address</label>
+                    <input type="email" id="email" name="email" class="form-input" required placeholder="Enter your email address" value="{{ request.form.email if request.form else '' }}">
+                    <div class="error-message-field" id="emailError"></div>
+                    <div class="success-message-field" id="emailSuccess"></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label" for="password">Password</label>
+                        <input type="password" id="password" name="password" class="form-input" required placeholder="Create a strong password">
+                        <div class="error-message-field" id="passwordError"></div>
+                        <div class="password-requirements" id="passwordRequirements">
+                            <div class="requirement unmet" id="req-length"><span>✓</span> At least 8 characters</div>
+                            <div class="requirement unmet" id="req-uppercase"><span>✓</span> One uppercase letter</div>
+                            <div class="requirement unmet" id="req-lowercase"><span>✓</span> One lowercase letter</div>
+                            <div class="requirement unmet" id="req-number"><span>✓</span> One number</div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="confirm_password">Confirm Password</label>
+                        <input type="password" id="confirm_password" name="confirm_password" class="form-input" required placeholder="Confirm your password">
+                        <div class="error-message-field" id="confirmPasswordError"></div>
+                        <div class="success-message-field" id="confirmPasswordSuccess"></div>
+                    </div>
+                </div>
+                <div class="terms-agreement">
+                    <input type="checkbox" id="termsAgree" name="termsAgree" class="terms-checkbox" required>
+                    <div class="terms-text">I agree to the <a href="#" class="terms-link">Terms of Service</a> and <a href="#" class="terms-link">Privacy Policy</a>.</div>
+                </div>
+                <div class="error-message-field" id="termsError"></div>
+                <button type="submit" class="register-btn" id="registerBtn"><span class="btn-text">Create Account</span></button>
+                <div class="error-message-field" id="generalError"></div>
+            </form>
+            <div class="register-footer">
+                <p class="login-link">Already have an account? <a href="{{ url_for('login') }}">Sign in here</a></p>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}
+
+{% block scripts_extra %}
+<script>
+    // Your existing client-side validation JS for registration.html
+    // ... (script content from previous registration.html for password strength, matching, etc.) ...
+    const registerForm = document.getElementById('registerForm');
+    // ... rest of your validation script ...
+</script>
+{% endblock %}

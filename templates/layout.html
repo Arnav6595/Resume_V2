@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}AI Resume Parser & Job Matcher{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    {% block head_extra %}{# For page-specific meta or links in head #}{% endblock %}
+</head>
+<body class="{% block body_class %}{% endblock %}"> {# Added body_class block #}
+    <nav class="main-nav">
+        <div class="nav-left">
+            <a href="{{ url_for('index') }}" class="nav-logo">🤖 AI Resume Parser</a>
+        </div>
+        <div class="nav-right">
+            {% if g.user %}
+                <span class="user-info">Logged in as: {{ g.user.username }}</span>
+                <a href="{{ url_for('dashboard') }}">Dashboard</a>
+                <a href="{{ url_for('logout') }}">Logout</a>
+            {% else %}
+                <a href="{{ url_for('login') }}">Login</a>
+                <a href="{{ url_for('register') }}">Register</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <main class="content-container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <ul class="flashes">
+                {% for category, message in messages %}
+                    <li class="{{ category }}">{{ message }}</li>
+                {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="main-footer">
+        <p>&copy; {{ current_year }} AI Resume Parser & Job Matcher. All rights reserved.</p>
+    </footer>
+    {% block scripts_extra %}{# For page-specific JS at the end of body #}{% endblock %}
+</body>
+</html>
