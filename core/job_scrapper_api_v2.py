@@ -358,23 +358,27 @@ def scrape_jobs(
 
     all_jobs.extend(fetch_jsearch_jobs(keywords=final_keywords_to_use, limit=max_jobs_per_source, location_query=location))
 
-    # --- MODIFIED USAJOBS KEYWORD LOGIC ---
+# --- MODIFIED USAJOBS KEYWORD LOGIC (REVISED) ---
     usajobs_search_location_name = None
     if location and (location.lower() in ["usa", "united states"] or "us" in location.lower().split()):
         usajobs_search_location_name = location
 
     keywords_for_usajobs = []
     if using_skills_from_json: # Personalized search
-        keywords_for_usajobs = final_keywords_to_use
+        keywords_for_usajobs = final_keywords_to_use # These are from extracted_skills.json
         print(f"USAJOBS: Using personalized keywords from JSON for US search: {keywords_for_usajobs[:5]}...")
-    else: # Fallback/Recommended search
-        keywords_for_usajobs = ["IT Specialist", "Computer Scientist"] # Specific, simpler list
-        print(f"USAJOBS: Using specific recommended keywords for US search: {keywords_for_usajobs}")
+    else: # Fallback to use the same keywords as other APIs
+        keywords_for_usajobs = final_keywords_to_use # CHANGED THIS LINE
+        print(f"USAJOBS: Using fallback keywords (same as other APIs) for US search: {keywords_for_usajobs[:5]}...") # Updated print statement
+
+    if not keywords_for_usajobs: # Add a check in case final_keywords_to_use was also empty
+        print("USAJOBS: No keywords available after fallback, using generic terms for USAJOBS.")
+        keywords_for_usajobs = ["IT", "Government", "Federal"] # Or your preferred generic terms for USAJOBS
 
     if USAJOBS_API_KEY and USAJOBS_USER_AGENT: # Check keys before printing "Attempting..."
-        print(f"Attempting USAJOBS search (Targeting US: {usajobs_search_location_name if usajobs_search_location_name else 'Nationwide'})...")
+        print(f"Attempting USAJOBS search with keywords '{keywords_for_usajobs[:5]}...' (Targeting US: {usajobs_search_location_name if usajobs_search_location_name else 'Nationwide'})...")
     all_jobs.extend(fetch_usajobs(keywords=keywords_for_usajobs, limit=max_jobs_per_source, location_name=usajobs_search_location_name))
-    # --- END OF MODIFIED USAJOBS KEYWORD LOGIC ---
+    # --- END OF MODIFIED USAJOBS KEYWORD LOGIC (REVISED) ---
 
     all_jobs.extend(fetch_github_jobs_mirror(keywords=final_keywords_to_use, limit=max_jobs_per_source, location_query=location))
 
@@ -409,7 +413,7 @@ if __name__ == "__main__":
 
     example_search_keywords = ["Software Developer", "IT Support", "Data Analyst", "Fresher", "Developer", "Python", "Java", "Software", "IT"]
     skills_file_path = "extracted_skills.json"
-    test_run_limit = 5
+    test_run_limit = 15
 
     # Create a dummy extracted_skills.json for testing if it doesn't exist
     if not os.path.exists(skills_file_path):
