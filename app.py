@@ -21,9 +21,9 @@ except ImportError as e:
             return {"metadata": {"resume_score": 0.0}, "skills": {"all_skills": []}}
 
 try:
-    from core.job_scrapper_api_v2 import scrape_jobs, PREDEFINED_SKILLS_KEYWORDS
+    from core.job_scrapper_api_v3 import scrape_jobs, PREDEFINED_SKILLS_KEYWORDS
 except ImportError as e:
-    print(f"Error importing Job Scrapper module (core.job_scrapper_api_v2): {e}")
+    print(f"Error importing Job Scrapper module (core.job_scrapper_api_v3): {e}")
     MODULES_LOADED_SUCCESSFULLY = False
     def scrape_jobs(keywords, location, max_jobs_per_source, skills_json_path): return []
     PREDEFINED_SKILLS_KEYWORDS = []
