@@ -1,0 +1,130 @@
+{% extends "layout.html" %}
+
+{% block title %}Enhance Resume with AI - {{ resume_name }}{% endblock %}
+
+{# Set a descriptive body class. You can add 'page-resume-builder-dashboard-styled' 
+   if you have shared styles for this class from an external CSS file. #}
+{% block body_class %}page-resume-builder-enhance-prompt page-resume-builder-dashboard-styled{% endblock %}
+
+{% block head_extra %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- {#
+    IMPORTANT: It's highly recommended to move the <style> block below
+    into an external CSS file, e.g., static/css/resume_dashboard_theme.css or a new one like enhance_prompt_styles.css
+    and link it here:
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/your_styles.css') }}">
+    #} -->
+    <style>
+        /* Styles previously in the macro, now directly embedded */
+        /* Ensure these styles target the classes set in body_class or elements within this page */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body.page-resume-builder-dashboard-styled { /* This class is used from resume_builder_dashboard.html */
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+            line-height: 1.6;
+            padding-top: 2rem;
+        }
+        /* Styles specific to .page-resume-builder-enhance-prompt can also be added here or in body.page-resume-builder-enhance-prompt */
+
+        .dashboard-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 2rem 2rem 2rem;
+        }
+        .rb-header { text-align: center; margin-bottom: 2rem; color: white; }
+        .rb-header h1 { font-size: 2.5rem; font-weight: 700; margin-bottom: 0.5rem; text-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .rb-header h1 .fas { margin-right: 0.75rem; }
+        .rb-header p { font-size: 1.1rem; opacity: 0.9; margin-bottom: 1.5rem; }
+
+        .rb-section { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-radius: 20px; padding: 2rem; box-shadow: 0 20px 40px rgba(0,0,0,0.1); border: 1px solid rgba(255, 255, 255, 0.2); }
+        .rb-section-title { display: flex; align-items: center; gap: 0.75rem; font-size: 1.5rem; font-weight: 600; margin-bottom: 1.5rem; color: #2d3748; }
+        .rb-section-icon { width: 40px; height: 40px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.2rem; flex-shrink: 0; }
+
+        .form-group { margin-bottom: 1.5rem; }
+        .form-group label { display: block; margin-bottom: 0.5rem; font-weight: 500; color: #2d3748; }
+        textarea.form-input { width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 1rem; line-height: 1.5; min-height: 100px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.05); }
+        textarea.form-input:focus { border-color: #667eea; box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.25); outline: none; }
+
+        .rb-primary-action { background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 0.9rem 1.8rem; border-radius: 10px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease; border: none; cursor: pointer; }
+        .rb-primary-action:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4); }
+        .rb-primary-action .fas { margin-right: 0.3rem; }
+
+        .rb-nav-btn { /* Basic styling for cancel button if reusing this class from dashboard */
+            background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.3); color: white; padding: 0.75rem 1.5rem; border-radius: 50px; text-decoration: none; font-weight: 500; transition: all 0.3s ease; display: inline-flex; align-items: center; gap: 0.5rem;
+        }
+        .rb-nav-btn:hover { background: rgba(255, 255, 255, 0.3); transform: translateY(-2px); }
+
+        .tips-box { margin-top: 2.5rem; padding: 1.5rem; background-color: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); border-radius: 12px; color: rgba(255,255,255,0.9); }
+        .tips-box h4 { font-weight: 600; margin-bottom: 0.75rem; }
+        .tips-box ul { list-style-type: none; padding-left: 0; }
+        .tips-box ul li { margin-bottom: 0.5rem; padding-left: 1.5rem; position: relative; }
+        .tips-box ul li::before { content: "💡"; position: absolute; left: 0; }
+        .tips-box ul ul { margin-top: 0.3rem; margin-left: 1rem; }
+        .tips-box ul ul li::before { content: "➤"; }
+    </style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <header class="rb-header">
+        <h1><i class="fas fa-magic"></i> Enhance Resume: {{ resume_name }}</h1>
+        <p>Enter a prompt to guide the AI in enhancing your resume content. A new PDF will be generated based on the AI's suggestions.</p>
+    </header>
+
+    <section class="rb-section">
+        <h2 class="rb-section-title">
+            <div class="rb-section-icon"><i class="fas fa-comment-dots" style="font-size: 1rem;"></i></div>
+            Your Enhancement Prompt
+        </h2>
+        <form method="POST" action="{{ url_for('resume_builder_process_with_ai', resume_id=resume_id) }}">
+            <div class="form-group">
+                <label for="user_prompt">Prompt:</label>
+                <textarea id="user_prompt" name="user_prompt" class="form-input" rows="6" placeholder="e.g., 'Make the experience descriptions more impactful using action verbs for a software engineering role.', 'Rephrase the summary to be more concise and target a project manager position.', 'Suggest 3 alternative ways to phrase my key achievements for the first job, focusing on quantifiable results.'"></textarea>
+            </div>
+            <button type="submit" class="rb-primary-action">
+                <i class="fas fa-cogs"></i> Process with AI & Download PDF
+            </button>
+            <a href="{{ url_for('resume_builder_dashboard') }}" class="rb-nav-btn" style="margin-left: 1rem;">Cancel</a>
+        </form>
+    </section>
+
+    <div class="tips-box">
+        <h4><i class="fas fa-info-circle"></i> How this works & Prompting Tips:</h4>
+        <ul>
+            <li>Your current resume data for '{{ resume_name }}' will be sent to the AI along with your prompt.</li>
+            <li>The AI will attempt to modify the content based on your instructions.</li>
+            <li>A new PDF will be generated for you to download.</li>
+            <li>This process does <strong>not</strong> automatically save changes to your stored resume. Review the PDF, and if you like the changes, you can manually update your resume using the "Edit" feature.</li>
+            <li>Be specific in your prompts for better results:
+                <ul>
+                    <li>Mention the target job role if applicable (e.g., "for a data analyst role").</li>
+                    <li>Specify which section to focus on (e.g., "summary", "experience at XYZ Corp").</li>
+                    <li>Ask for a particular style (e.g., "more professional tone", "more concise").</li>
+                    <li>Request quantifiable achievements if that's your goal.</li>
+                </ul>
+            </li>
+             <li>Example Prompts:
+                <ul>
+                    <li>"Refine my summary to highlight leadership skills demonstrated in my past roles."</li>
+                    <li>"Rewrite the bullet points under my 'Tech Solutions Inc.' experience using the STAR method, emphasizing problem-solving."</li>
+                    <li>"Suggest stronger action verbs for my project descriptions to make them sound more proactive."</li>
+                    <li>"Review the entire resume for conciseness and clarity, and suggest improvements for readability."</li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts_extra %}
+{# Add any page-specific JavaScript here if needed #}
+{% endblock %}

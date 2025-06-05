@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ resume_doc.resume_name | default('Resume') }}</title>
+    {# Link to your resume_pdf_styles.css if you create one in static/css/ #}
+    {# <link rel="stylesheet" href="{{ url_for('static', filename='css/resume_pdf_styles.css') }}"> #}
+    <style>
+        /* Or embed basic styles here if not using an external CSS for PDF */
+        body { font-family: sans-serif; margin: 20px; }
+        .section h2 { border-bottom: 1px solid #ccc; padding-bottom: 5px;}
+        /* ... more styles ... */
+    </style>
+</head>
+<body>
+    <header style="text-align: center;">
+        <h1>{{ resume.personal_info.full_name | default('N/A') }}</h1>
+        <p>
+            {{ resume.personal_info.email | default('') }}
+            {% if resume.personal_info.phone %} | {{ resume.personal_info.phone }}{% endif %}
+            {% if resume.personal_info.location %} | {{ resume.personal_info.location }}{% endif %}
+        </p>
+        <p>
+            {% if resume.personal_info.linkedin %}LinkedIn: <a href="{{ resume.personal_info.linkedin }}">{{ resume.personal_info.linkedin }}</a> {% endif %}
+            {% if resume.personal_info.github %} | GitHub: <a href="{{ resume.personal_info.github }}">{{ resume.personal_info.github }}</a>{% endif %}
+        </p>
+    </header>
+
+    {% if resume.summary %}
+    <section class="section summary-section">
+        <h2>Summary</h2>
+        <p>{{ resume.summary }}</p>
+    </section>
+    {% endif %}
+
+    {% if resume.experience %}
+    <section class="section experience-section">
+        <h2>Work Experience</h2>
+        {% for exp in resume.experience %}
+        <div class="entry">
+            <h3>{{ exp.job_title | default('N/A') }} at {{ exp.company | default('N/A') }}</h3>
+            <p><em>{{ exp.start_date | default('') }} – {{ exp.end_date | default('') }} | {{ exp.location | default('') }}</em></p>
+            {% if exp.responsibilities %}
+            <ul>
+                {% for item in exp.responsibilities %}
+                <li>{{ item }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </section>
+    {% endif %}
+
+    {% if resume.education %}
+    <section class="section education-section">
+        <h2>Education</h2>
+        {% for edu in resume.education %}
+        <div class="entry">
+            <h3>{{ edu.degree | default('N/A') }}</h3>
+            <p>{{ edu.institution | default('N/A') }}{% if edu.location %} | {{ edu.location }}{% endif %}</p>
+            <p>Graduated: {{ edu.graduation_date | default('') }}{% if edu.gpa %} | GPA: {{ edu.gpa }}{% endif %}</p>
+        </div>
+        {% endfor %}
+    </section>
+    {% endif %}
+
+    {% if resume.skills %}
+    <section class="section skills-section">
+        <h2>Skills</h2>
+        {# Assuming skills is a list of strings for this basic template #}
+        <p>{{ resume.skills | join(', ') }}</p> 
+    </section>
+    {% endif %}
+
+    {% if resume.projects %}
+    <section class="section projects-section">
+        <h2>Projects</h2>
+        {% for proj in resume.projects %}
+        <div class="entry">
+            <h3>{{ proj.name | default('N/A') }} {% if proj.link %}(<a href="{{ proj.link }}">Link</a>){% endif %}</h3>
+            <p>{{ proj.description | default('') }}</p>
+        </div>
+        {% endfor %}
+    </section>
+    {% endif %}
+
+    {# Add other sections like certifications, awards if they are in your resume_data structure #}
+
+</body>
+</html>

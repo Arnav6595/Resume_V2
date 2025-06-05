@@ -18,13 +18,16 @@
 
     <header class="dashboard-header">
         <h1>📊 Your Dashboard</h1>
-        <p>Track your resume analysis history and saved job searches</p>
+        {# Updated paragraph to include managing created resumes #}
+        <p>Track your resume analysis history and manage your created resumes.</p>
     </header>
 
     <nav class="dashboard-nav-bar">
         <div class="dashboard-nav-container">
             <a href="{{ url_for('index') }}" class="dashboard-nav-btn">🤖 New Analysis</a>
-            <a href="#saved-resumes-section" class="dashboard-nav-btn active">📄 Saved Resumes</a>
+            {# Added Resume Builder Button Here #}
+            <a href="{{ url_for('resume_builder_dashboard') }}" class="dashboard-nav-btn">🛠️ Resume Builder</a> 
+            <a href="#saved-resumes-section" class="dashboard-nav-btn active">📄 Saved Resumes</a> {# Kept user's original "Saved Resumes" text for analyzed ones #}
             <a href="#job-searches-history-placeholder" class="dashboard-nav-btn">💼 Job Searches</a>
         </div>
     </nav>
@@ -34,6 +37,8 @@
             <h2 class="section-title"><div class="section-icon">📈</div> Session Overview</h2>
             <div class="stats-grid">
                 <div class="stat-card"><div class="stat-number">{{ user_searches | length }}</div><div class="stat-label">Resumes Analyzed</div></div>
+                {# You might want to add a stat for "Resumes Built" here later, e.g., using a new variable passed from app.py #}
+                {# <div class="stat-card"><div class="stat-number">{{ user_built_resumes | length if user_built_resumes else 0 }}</div><div class="stat-label">Resumes Built</div></div> #}
                 <div class="stat-card"><div class="stat-number">N/A</div><div class="stat-label">Total Jobs Found</div></div>
                 <div class="stat-card"><div class="stat-number">N/A</div><div class="stat-label">Avg. Resume Score</div></div>
                 <div class="stat-card"><div class="stat-number">{{ g.user.created_at.strftime('%b %Y') if g.user and g.user.created_at else 'N/A' }}</div><div class="stat-label">User Since</div></div>
@@ -41,6 +46,8 @@
         </section>
         <div class="quick-actions">
             <a href="{{ url_for('index') }}" class="quick-action-btn">🆕 Analyze New Resume</a>
+            {# Added "Create Built Resume" quick action button #}
+            <a href="{{ url_for('resume_builder_new') }}" class="quick-action-btn primary">➕ Create Built Resume</a>
             <button class="quick-action-btn" onclick="exportClientData()">📥 Export Displayed Data</button>
             <button class="quick-action-btn" onclick="sharePage()">🔗 Share Dashboard</button>
         </div>
@@ -85,6 +92,28 @@
 {% block scripts_extra %}
 <script>
     // Your existing client-side JS for dashboard.html (exportClientData, sharePage, smooth scroll)
-    // ... (script content from previous dashboard.html) ...
+    // Make sure these functions exist or are defined if called.
+    function exportClientData() {
+        alert("Export functionality placeholder.");
+    }
+    function sharePage() {
+        alert("Share functionality placeholder.");
+    }
+    // Smooth scroll for anchor links in nav (if you keep them as anchors)
+    document.querySelectorAll('.dashboard-nav-btn[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            const hrefAttribute = this.getAttribute('href');
+            // Ensure it's a valid selector and not just "#"
+            if (hrefAttribute && hrefAttribute.length > 1) { 
+                const targetElement = document.querySelector(hrefAttribute);
+                if (targetElement) {
+                    e.preventDefault();
+                    targetElement.scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                }
+            }
+        });
+    });
 </script>
-{% endblock %} 
+{% endblock %}

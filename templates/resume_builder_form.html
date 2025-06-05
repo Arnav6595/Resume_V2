@@ -1,0 +1,331 @@
+{% extends "layout.html" %}
+
+{% block title %}{{ 'Edit' if resume_data else 'Create New' }} Resume - AI Resume Parser{% endblock %}
+
+{% block body_class %}page-resume-builder-form{% endblock %}
+
+{% block head_extra %}
+    <style>
+        /* Basic styling for form sections - can be moved to CSS file */
+        .resume-form-section {
+            background-color: #fff;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.07);
+            margin-bottom: 30px;
+        }
+        .resume-form-section h3 {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .resume-form-subsection { /* For dynamically added entries */
+            border: 1px solid #e0e0e0;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            background-color: #f9f9f9;
+        }
+        .subsection-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .subsection-header h4 {
+            margin: 0;
+            font-size: 1.1rem;
+            color: #444;
+        }
+        .add-entry-btn, .remove-entry-btn {
+            padding: 8px 15px;
+            font-size: 0.9rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s ease, color 0.2s ease;
+            border: 1px solid transparent;
+        }
+        .add-entry-btn {
+            background-color: #5cb85c; /* Green */
+            color: white;
+            border-color: #4cae4c;
+        }
+        .add-entry-btn:hover {
+            background-color: #4cae4c;
+        }
+        .remove-entry-btn {
+            background-color: #d9534f; /* Red */
+            color: white;
+            border-color: #d43f3a;
+        }
+        .remove-entry-btn:hover {
+            background-color: #c9302c;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        .form-group.full-width {
+            grid-column: 1 / -1; /* Span full width */
+        }
+        .form-input, .form-textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            box-sizing: border-box;
+            transition: border-color 0.3s ease;
+        }
+        .form-input:focus, .form-textarea:focus {
+            border-color: #5E72E4;
+            outline: none;
+        }
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #525f7f;
+        }
+        .submit-resume-btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background-color: #5E72E4;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-top: 20px;
+        }
+        .submit-resume-btn:hover {
+            background-color: #485ac0;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-page-content-wrapper">
+    <div class="bg-decoration">
+        <div class="floating-shape mochi-1"></div>
+    </div>
+
+    <header class="dashboard-header">
+        <h1>{{ 'Edit Your' if resume_data else 'Create a New' }} Resume</h1>
+        <p>Fill in the details below to build your professional resume.</p>
+    </header>
+
+    <div class="dashboard-content-area" style="max-width: 900px; margin: 20px auto;">
+        <form id="resumeBuilderForm" method="POST" action="{{ form_action }}">
+             {# Flask-WTF CSRF token, if you use Flask-WTF. Make sure it's included if your app uses it. #}
+             {# Example: <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"> #}
+
+
+            <section class="resume-form-section">
+                <h3>General Information</h3>
+                <div class="form-group full-width">
+                    <label class="form-label" for="resume_name">Resume Name</label>
+                    <input type="text" id="resume_name" name="resume_name" class="form-input" placeholder="e.g., Software Engineer Resume V1" value="{{ resume_data.resume_name if resume_data and resume_data.resume_name else '' }}" required>
+                </div>
+            </section>
+
+            <section class="resume-form-section">
+                <h3>Personal Information</h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label" for="pi_full_name">Full Name</label>
+                        <input type="text" id="pi_full_name" name="pi_full_name" class="form-input" placeholder="Your Full Name" value="{{ resume_data.sections.personal_info.full_name if resume_data and resume_data.sections and resume_data.sections.personal_info else '' }}">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="pi_email">Email</label>
+                        <input type="email" id="pi_email" name="pi_email" class="form-input" placeholder="your.email@example.com" value="{{ resume_data.sections.personal_info.email if resume_data and resume_data.sections and resume_data.sections.personal_info else '' }}">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="pi_phone">Phone</label>
+                        <input type="tel" id="pi_phone" name="pi_phone" class="form-input" placeholder="Your Phone Number" value="{{ resume_data.sections.personal_info.phone if resume_data and resume_data.sections and resume_data.sections.personal_info else '' }}">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="pi_location">Location / Address</label>
+                        <input type="text" id="pi_location" name="pi_location" class="form-input" placeholder="City, Country" value="{{ resume_data.sections.personal_info.location if resume_data and resume_data.sections and resume_data.sections.personal_info else '' }}">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="pi_linkedin">LinkedIn Profile URL</label>
+                        <input type="url" id="pi_linkedin" name="pi_linkedin" class="form-input" placeholder="linkedin.com/in/yourprofile" value="{{ resume_data.sections.personal_info.linkedin if resume_data and resume_data.sections and resume_data.sections.personal_info else '' }}">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="pi_github">GitHub Profile URL (Optional)</label>
+                        <input type="url" id="pi_github" name="pi_github" class="form-input" placeholder="github.com/yourusername" value="{{ resume_data.sections.personal_info.github if resume_data and resume_data.sections and resume_data.sections.personal_info else '' }}">
+                    </div>
+                </div>
+            </section>
+
+            <section class="resume-form-section">
+                <h3>Professional Summary / Objective</h3>
+                <div class="form-group full-width">
+                    <label class="form-label" for="summary_text">Summary</label>
+                    <textarea id="summary_text" name="summary_text" class="form-textarea" placeholder="Write a brief summary...">{{ resume_data.sections.summary if resume_data and resume_data.sections and resume_data.sections.summary else '' }}</textarea>
+                </div>
+            </section>
+
+            <section class="resume-form-section">
+                <h3>
+                    Work Experience
+                    <button type="button" class="add-entry-btn" id="addExperienceBtn">+ Add Experience</button>
+                </h3>
+                <div id="experienceEntriesWrapper">
+                    {# Initial entry if editing, or a blank one if creating new #}
+                    {% if resume_data and resume_data.sections and resume_data.sections.experience %}
+                        {% for exp_item in resume_data.sections.experience %}
+                        <div class="experience-entry resume-form-subsection" id="experienceEntry-{{ loop.index0 }}"> {# Use loop.index0 for existing items #}
+                            <div class="subsection-header">
+                                <h4>Work Experience #{{ loop.index }}</h4>
+                                {% if loop.index0 > 0 %} {# Don't allow removing the very first one if it's pre-filled, or adjust logic #}
+                                <button type="button" class="remove-entry-btn" data-remove="experienceEntry-{{ loop.index0 }}">Remove</button>
+                                {% endif %}
+                            </div>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label class="form-label" for="exp{{ loop.index0 }}_job_title">Job Title</label>
+                                    <input type="text" id="exp{{ loop.index0 }}_job_title" name="experience-{{ loop.index0 }}-job_title" class="form-input" value="{{ exp_item.job_title | default('') }}">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="exp{{ loop.index0 }}_company">Company Name</label>
+                                    <input type="text" id="exp{{ loop.index0 }}_company" name="experience-{{ loop.index0 }}-company" class="form-input" value="{{ exp_item.company | default('') }}">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="exp{{ loop.index0 }}_location">Location</label>
+                                    <input type="text" id="exp{{ loop.index0 }}_location" name="experience-{{ loop.index0 }}-location" class="form-input" value="{{ exp_item.location | default('') }}">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="exp{{ loop.index0 }}_start_date">Start Date</label>
+                                    <input type="text" id="exp{{ loop.index0 }}_start_date" name="experience-{{ loop.index0 }}-start_date" class="form-input" placeholder="YYYY-MM" value="{{ exp_item.start_date | default('') }}">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="exp{{ loop.index0 }}_end_date">End Date</label>
+                                    <input type="text" id="exp{{ loop.index0 }}_end_date" name="experience-{{ loop.index0 }}-end_date" class="form-input" placeholder="YYYY-MM or Present" value="{{ exp_item.end_date | default('') }}">
+                                </div>
+                            </div>
+                            <div class="form-group full-width" style="margin-top: 15px;">
+                                <label class="form-label" for="exp{{ loop.index0 }}_responsibilities">Responsibilities & Achievements</label>
+                                <textarea id="exp{{ loop.index0 }}_responsibilities" name="experience-{{ loop.index0 }}-responsibilities" class="form-textarea">{{ exp_item.responsibilities | join('\n') if exp_item.responsibilities else '' }}</textarea>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        {# Optionally, include one blank entry by default if creating new, or let JS add the first one #}
+                        {# For simplicity, let's assume JS will add the first one if this block is empty on new resume creation #}
+                    {% endif %}
+                </div>
+            </section>
+
+            <section class="resume-form-section">
+                <h3>
+                    Education
+                    <button type="button" class="add-entry-btn" id="addEducationBtn">+ Add Education</button>
+                </h3>
+                <div id="educationEntriesWrapper">
+                    {% if resume_data and resume_data.sections and resume_data.sections.education %}
+                        {% for edu_item in resume_data.sections.education %}
+                        <div class="education-entry resume-form-subsection" id="educationEntry-{{ loop.index0 }}">
+                            <div class="subsection-header">
+                                <h4>Education #{{ loop.index }}</h4>
+                                 {% if loop.index0 > 0 %}
+                                <button type="button" class="remove-entry-btn" data-remove="educationEntry-{{ loop.index0 }}">Remove</button>
+                                {% endif %}
+                            </div>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label class="form-label" for="edu{{ loop.index0 }}_degree">Degree / Program</label>
+                                    <input type="text" id="edu{{ loop.index0 }}_degree" name="education-{{ loop.index0 }}-degree" class="form-input" value="{{ edu_item.degree | default('') }}">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="edu{{ loop.index0 }}_institution">Institution Name</label>
+                                    <input type="text" id="edu{{ loop.index0 }}_institution" name="education-{{ loop.index0 }}-institution" class="form-input" value="{{ edu_item.institution | default('') }}">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="edu{{ loop.index0 }}_location">Location</label>
+                                    <input type="text" id="edu{{ loop.index0 }}_location" name="education-{{ loop.index0 }}-location" class="form-input" value="{{ edu_item.location | default('') }}">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="edu{{ loop.index0 }}_graduation_date">Graduation Date</label>
+                                    <input type="text" id="edu{{ loop.index0 }}_graduation_date" name="education-{{ loop.index0 }}-graduation_date" class="form-input" placeholder="YYYY-MM" value="{{ edu_item.graduation_date | default('') }}">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="edu{{ loop.index0 }}_gpa">GPA / Score (Optional)</label>
+                                    <input type="text" id="edu{{ loop.index0 }}_gpa" name="education-{{ loop.index0 }}-gpa" class="form-input" value="{{ edu_item.gpa | default('') }}">
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </section>
+
+            <section class="resume-form-section">
+                <h3>Skills</h3>
+                <div class="form-group full-width">
+                    <label class="form-label" for="skills_text">List Your Skills</label>
+                    <textarea id="skills_text" name="skills_text" class="form-textarea" placeholder="e.g., Python, JavaScript, Project Management...">{% if resume_data and resume_data.sections and resume_data.sections.skills %}{{ resume_data.sections.skills|join(', ') }}{% endif %}</textarea>
+                    <small>Tip: Separate skills with commas or new lines.</small>
+                </div>
+            </section>
+
+            <section class="resume-form-section">
+                <h3>
+                    Projects
+                    <button type="button" class="add-entry-btn" id="addProjectBtn">+ Add Project</button>
+                </h3>
+                <div id="projectEntriesWrapper">
+                    {% if resume_data and resume_data.sections and resume_data.sections.projects %}
+                        {% for proj_item in resume_data.sections.projects %}
+                        <div class="project-entry resume-form-subsection" id="projectEntry-{{ loop.index0 }}">
+                             <div class="subsection-header">
+                                <h4>Project #{{ loop.index }}</h4>
+                                 {% if loop.index0 > 0 %}
+                                <button type="button" class="remove-entry-btn" data-remove="projectEntry-{{ loop.index0 }}">Remove</button>
+                                {% endif %}
+                            </div>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label class="form-label" for="proj{{ loop.index0 }}_name">Project Name</label>
+                                    <input type="text" id="proj{{ loop.index0 }}_name" name="project-{{ loop.index0 }}-name" class="form-input" value="{{ proj_item.name | default('') }}">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="proj{{ loop.index0 }}_link">Project Link (Optional)</label>
+                                    <input type="url" id="proj{{ loop.index0 }}_link" name="project-{{ loop.index0 }}-link" class="form-input" placeholder="https://github.com/yourproject" value="{{ proj_item.link | default('') }}">
+                                </div>
+                            </div>
+                            <div class="form-group full-width" style="margin-top: 15px;">
+                                <label class="form-label" for="proj{{ loop.index0 }}_description">Description & Technologies</label>
+                                <textarea id="proj{{ loop.index0 }}_description" name="project-{{ loop.index0 }}-description" class="form-textarea">{{ proj_item.description | default('') }}</textarea>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </section>
+
+            <button type="submit" class="submit-resume-btn">{{ 'Save Changes' if resume_data else 'Create Resume' }}</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts_extra %}
+    {# Link the external JavaScript file #}
+    <script src="{{ url_for('static', filename='js/resume_builder.js') }}"></script>
+{% endblock %}
