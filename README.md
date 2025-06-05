@@ -174,7 +174,7 @@ All processing results, including parsed resume data, job listings, and user-cre
     * Replace placeholders. [cite: 1]
     * Ensure MongoDB Atlas cluster network access is configured. [cite: 1]
 
-## ධාවනය Running the Application
+## Running the Application
 
 1.  Activate virtual environment. [cite: 1]
 2.  Ensure `.env` variables are set. [cite: 1]
