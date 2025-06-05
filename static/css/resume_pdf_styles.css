@@ -1,0 +1,167 @@
+/* static/css/resume_pdf_styles.css */
+
+@page {
+    size: A4;
+    margin: 1.5cm 1.8cm; /* Top/Bottom Left/Right */
+    /* You can add @top-center, @bottom-left etc. for headers/footers if needed */
+}
+
+body {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; /* Common sans-serif fonts */
+    font-size: 10pt;
+    line-height: 1.4;
+    color: #333333;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+    color: #007bff; /* A standard link blue */
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* --- Header / Personal Info --- */
+header.pdf-header {
+    text-align: center;
+    margin-bottom: 0.8cm;
+    padding-bottom: 0.5cm;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+header.pdf-header h1 {
+    font-size: 24pt;
+    color: #2c3e50;
+    margin: 0 0 5px 0;
+    font-weight: 500;
+}
+
+header.pdf-header p.contact-info {
+    font-size: 9pt;
+    color: #555555;
+    margin: 2px 0;
+    line-height: 1.3;
+}
+
+header.pdf-header p.contact-info a {
+    color: #4A90E2; /* Slightly different link color for header */
+}
+
+
+/* --- General Section Styling --- */
+section.section {
+    margin-bottom: 0.8cm;
+    /* page-break-inside: avoid; */ /* Try to keep sections on one page if possible */
+}
+
+section.section h2 {
+    font-size: 15pt;
+    color: #34495e; /* Darker blue-gray */
+    border-bottom: 1.5px solid #7f8c8d; /* Slightly thicker, different color */
+    padding-bottom: 0.15cm;
+    margin-top: 0;
+    margin-bottom: 0.4cm;
+    font-weight: 500;
+    /* text-transform: uppercase; */ /* Optional: for a more formal look */
+    letter-spacing: 0.5px;
+}
+
+/* --- Entry Styling (for Experience, Education, Projects) --- */
+.entry {
+    margin-bottom: 0.5cm;
+    /* page-break-inside: avoid; */
+}
+
+.entry h3 {
+    font-size: 12pt;
+    color: #2c3e50;
+    margin: 0 0 2px 0;
+    font-weight: 600; /* Bolder for job titles/degrees */
+}
+.entry h3 .company,
+.entry h3 .institution {
+    font-weight: 500; /* Slightly less bold for company/institution */
+    color: #4a4a4a;
+}
+
+
+.entry p.meta-info { /* For dates, locations */
+    font-size: 9pt;
+    color: #777777;
+    margin: 0 0 5px 0;
+    font-style: italic;
+}
+
+.entry ul {
+    list-style-type: disc; /* Or none, then use ::before for custom bullets */
+    padding-left: 1.5em; /* Indent bullets */
+    margin: 5px 0 0 0;
+}
+
+.entry ul li {
+    margin-bottom: 3px;
+    line-height: 1.3;
+    text-align: justify; /* Justify list item text for a cleaner look */
+}
+
+/* --- Specific Sections --- */
+.summary-section p {
+    text-align: justify;
+    font-size: 10pt;
+}
+
+.skills-section .skills-content {
+    padding: 5px 0;
+}
+
+.skills-section .skill-category {
+    font-weight: bold;
+    margin-top: 8px;
+    margin-bottom: 3px;
+    font-size: 10pt;
+    color: #333;
+}
+
+.skills-section .skill-list {
+    /* For comma-separated skills in a paragraph */
+    line-height: 1.5;
+}
+.skills-section .skill-item {
+    /* If you decide to list skills individually or in tags */
+    display: inline-block;
+    background-color: #e9ecef;
+    color: #495057;
+    padding: 3px 8px;
+    margin: 2px 4px 2px 0;
+    border-radius: 4px;
+    font-size: 9pt;
+}
+
+
+.projects-section .project-link {
+    font-size: 9pt;
+    margin-left: 10px;
+}
+
+.projects-section .project-description {
+    margin-top: 3px;
+}
+
+/* Utility for clearing floats if any (though not used much in this simple layout) */
+.clear {
+    clear: both;
+}
+
+/* Example of how you might handle multi-column layouts if needed (more advanced) */
+/*
+.two-column-layout {
+    column-count: 2;
+    column-gap: 1cm;
+}
+.two-column-layout .section {
+    break-inside: avoid-column;
+}
+*/
